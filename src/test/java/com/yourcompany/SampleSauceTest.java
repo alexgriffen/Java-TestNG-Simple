@@ -71,7 +71,7 @@ public class SampleSauceTest {
 //        	caps.setCapability("testobject_device", "iPhone_SE_10_2_POC111"); 
 //        	caps.setCapability("testobject_cache_device", true);
 //        	caps.setCapability("automationName", "XCUITest");
-//        	caps.setCapability("testobject_api_key", "C8F800C576464CF3B5BD67CBD14B2288"); 
+//        	caps.setCapability("testobject_api_key", System.getenv("TESTOBJECT_API_KEY")); //specific project's API Key here
 
 //--------------------------------------------------------------------------------------------------------------------------------------
     
@@ -91,6 +91,7 @@ public class SampleSauceTest {
 //-----------------------------------------------------------------------------------------------------------------------------------
 
 //Test Goes Here
+	driver.get("https://saucelabs.com"); //simple example for web app
        
 //Sleep mechanism to help visually confirm results in the video playback
        try{
