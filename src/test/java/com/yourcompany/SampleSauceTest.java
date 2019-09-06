@@ -1,106 +1,169 @@
 package com.yourcompany;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.openqa.selenium.By;
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.BeforeMethod;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import com.sun.jna.platform.win32.Sspi.TimeStamp;
-
-import static org.testng.Assert.assertEquals;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.ios.IOSDriver;
-
-import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
+import java.rmi.UnexpectedException;
 
 
 public class SampleSauceTest {
 
-	  public static final String USERNAME = System.getenv("SAUCE_USERNAME");
-	  public static final String ACCESS_KEY = System.getenv("SAUCE_ACCESS_KEY");
-	  public static final String URL = "https://" + USERNAME + ":" + ACCESS_KEY + "@ondemand.saucelabs.com:443/wd/hub";
-	  public static long beforeSession;
-	  public static long afterSession;
-	  
-	@Test
-    public static void main() throws IOException {
+    public String buildTag = System.getenv("BUILD_TAG");
 
-		TimeStamp timeStamp = new TimeStamp();
-		
-        DesiredCapabilities caps = new DesiredCapabilities();
-        	caps.setCapability("platform", "macOS 10.12");
-        	caps.setCapability("version", "58.0");
-        	caps.setCapability("browserName", "chrome");
-        
-//        	caps.setCapability("chromedriverVersion", "2.26");
-//        	caps.setCapability("seleniumVersion", "3.3.0");
-//        	
-//        	caps.setCapability("appiumVersion", "1.6.4");
-//        	caps.setCapability("deviceName","iPhone Simulator");
-//        	caps.setCapability("deviceOrientation", "portrait");
-//        	caps.setCapability("browserName", "Safari");
-//        	caps.setCapability("platformVersion", "10.3");
-//        	caps.setCapability("platformName","iOS");
-//        	caps.setCapability("app", "sauce-storage:Meridian.zip");
-//        	caps.setCapability("idleTimeout", "1000");
-//        	caps.setCapability("appActivity", "com.docusign.ink.WelcomeActivity");
-//        	caps.setCapability("appPackage", "com.docusign.ink");
-//        	caps.setCapability("autoAcceptAlerts", true);
-//        
-//        	caps.setCapability("testobject_appium_version", "1.6.4");
-//        	caps.setCapability("testobject_device", "iPhone_SE_10_2_POC111"); 
-//        	caps.setCapability("testobject_cache_device", true);
-//        	caps.setCapability("automationName", "XCUITest");
-//        	caps.setCapability("testobject_api_key", "C8F800C576464CF3B5BD67CBD14B2288"); 
+    public String username = System.getenv("SAUCE_USERNAME");
 
-//--------------------------------------------------------------------------------------------------------------------------------------
-    
-  		  beforeSession = System.currentTimeMillis();
-		  System.out.println("BEFORE SESSION " + beforeSession);
-//		  AndroidDriver driver = new AndroidDriver<WebElement>(new URL("https://" + USERNAME +":" + ACCESS_KEY + "@ondemand.saucelabs.com:443/wd/hub"), caps);
-//		  AndroidDriver driver = new AndroidDriver<WebElement>(new URL("https://us1.appium.testobject.com/wd/hub"), caps);
-//		  IOSDriver driver = new IOSDriver<WebElement>(new URL("https://" + USERNAME +":" + ACCESS_KEY + "@ondemand.saucelabs.com:443/wd/hub"), caps);
-//		  IOSDriver driver = new IOSDriver<WebElement>(new URL("https://us1.appium.testobject.com/wd/hub"), caps);
-		  WebDriver driver = new RemoteWebDriver(new URL(URL), caps);
+    public String accesskey = System.getenv("SAUCE_ACCESS_KEY");
 
-     
-//		  WebDriverWait wait = new WebDriverWait(driver, 30);
-//		  driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		  System.out.println("SESSION HAS STARTED - SESSION CREATION TIME: " + (System.currentTimeMillis() - beforeSession));
-		  
-//-----------------------------------------------------------------------------------------------------------------------------------
+    /**
+     * ThreadLocal variable which contains the {@link WebDriver} instance which
+     * is used to perform browser interactions with.
+     */
+    private ThreadLocal<WebDriver> webDriver = new ThreadLocal<WebDriver>();
 
-//Test Goes Here
-       
-//Sleep mechanism to help visually confirm results in the video playback
-       try{
-       	   Thread.sleep(10000);
-       	  }catch (InterruptedException ie1) {
-       	    //ie1.printStackTrace();
-       	  } 
+    /**
+     * @return the {@link WebDriver} for the current thread
+     */
+    public WebDriver getWebDriver() {
+        return webDriver.get();
+    }
 
-        driver.quit();
-      }
+    /**
+     * DataProvider that explicitly sets the browser combinations to be used.
+     *
+     * @return Two dimensional array of objects with browser, version, and
+     * platform information
+     */
+    @DataProvider(name = "hardCodedBrowsers", parallel = true)
+    public static Object[][] sauceBrowserDataProvider(Method testMethod) {
+        return new Object[][]{
 
+                // if (osOption === "edgeIEWindows"){
+                // Windows OS
+                // new Object[]{"MicrosoftEdge", "latest", "Windows 10"},
+                // new Object[]{"MicrosoftEdge", "latest-1", "Windows 10"},
+                // new Object[]{"MicrosoftEdge", "latest-1", "Windows 10"},
+
+                // new Object[]{"internet explorer", "latest", "Windows 7"},
+                // } else {
+
+                 new Object[]{"firefox", "latest", "Windows 10", "1024x768"},
+                 new Object[]{"firefox", "latest-1", "Windows 10", "1024x768"},
+                 new Object[]{"firefox", "latest-2", "Windows 10", "1024x768"},
+
+                 new Object[]{"chrome", "latest", "Windows 10", "1024x768"},
+                 new Object[]{"chrome", "latest-1", "Windows 10", "1024x768"},
+                 new Object[]{"chrome", "latest-2", "Windows 10", "1024x768"},
+
+
+                // Mac OS
+//                new Object[]{"chrome", "latest", "OS X 10.14"},
+//                new Object[]{"chrome", "latest-1", "OS X 10.14"},
+//                new Object[]{"chrome", "latest-2", "OS X 10.14"},
+//
+//                new Object[]{"firefox", "latest", "OS X 10.14"},
+//                new Object[]{"firefox", "latest-1", "OS X 10.14"},
+//                new Object[]{"firefox", "latest-2", "OS X 10.14"},
+
+                // new Object[]{"safari", "12.0", "OS X 10.14"},
+                //
+                // new Object[]{"safari", "12.1", "OS X 10.13"},
+                // new Object[]{"safari", "11.1", "OS X 10.13"},
+                //
+                // new Object[]{"safari", "11.0", "OS X 10.12"},
+                // new Object[]{"safari", "10.1", "OS X 10.12"},
+                //
+                // new Object[]{"safari", "10.0", "OS X 10.11"},
+                // new Object[]{"safari", "9.0", "OS X 10.11"},
+
+                /**
+                 *** use these when running headless
+                 **/
+
+                // new Object[]{"firefox", "latest", "Linux"},
+                // new Object[]{"firefox", "latest-1", "Linux"},
+                // new Object[]{"firefox", "latest-2", "Linux"},
+                // new Object[]{"chrome", "latest", "Linux"},
+                // new Object[]{"chrome", "latest-1", "Linux"},
+                // new Object[]{"chrome", "latest-2", "Linux"},
+        };
+    }
+
+    /**
+     * Constructs a new {@link RemoteWebDriver} instance which is configured to
+     * use the capabilities defined by the browser, version and os parameters,
+     * and which is configured to run against ondemand.saucelabs.com, using the
+     * username and access key populated by the {@link #authentication}
+     * instance.
+     *
+     * @param browser    Represents the browser to be used as part of the test run.
+     * @param version    Represents the version of the browser to be used as part
+     *                   of the test run.
+     * @param os         Represents the operating system to be used as part of the test
+     *                   run.
+     * @param rez        Represents the screen resolution
+     * @return
+     * @throws MalformedURLException if an error occurs parsing the url
+     */
+    protected void createDriver(String browser, String version, String os, String rez, String methodName)
+            throws MalformedURLException, UnexpectedException {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+
+        // set desired capabilities to launch appropriate browser on Sauce
+        capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
+        capabilities.setCapability(CapabilityType.VERSION, version);
+        capabilities.setCapability(CapabilityType.PLATFORM, os);
+        capabilities.setCapability("screenResolution", rez);
+        capabilities.setCapability("name", methodName);
+
+
+        //Getting the build name.
+        // Using the Jenkins ENV var. You can use your own. If it is not set test will run without a build id.
+        if (buildTag != null) {
+            capabilities.setCapability("build", buildTag);
+        }
+
+
+        // Launch remote browser and set it as the current thread
+        webDriver.set(new RemoteWebDriver(new URL("https://" + username + ":" + accesskey + "@ondemand.saucelabs.com/wd/hub"), capabilities));
+
+    }
+
+    @Test(dataProvider = "hardCodedBrowsers")
+    public void LoadTestPage(String browser, String version, String os, String rez, Method method)
+            throws MalformedURLException, InvalidElementStateException, UnexpectedException, InterruptedException {
+
+        //create webdriver session
+        this.createDriver(browser, version, os, rez, method.getName());
+        WebDriver driver = this.getWebDriver();
+
+        driver.get("https://saucelabs.com"); //update this link to whichever site you'd like to take screenshots of
+        driver.get("https://yahoo.com");
+
+    }
+
+    /**
+     * Method that gets invoked after test. Dumps browser log and Closes the
+     * browser
+     */
+    @AfterMethod
+    public void tearDown(ITestResult result) throws Exception {
+        ((JavascriptExecutor) webDriver.get()).executeScript("sauce:job-result=" + (result.isSuccess() ? "passed" : "failed")); //sauce:context
+        webDriver.get().quit();
+    }
+
+    protected void annotate(String text) {
+        ((JavascriptExecutor) webDriver.get()).executeScript("sauce:context=" + text);
+    }
 }
-   
+
+
