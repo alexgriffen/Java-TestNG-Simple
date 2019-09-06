@@ -10,6 +10,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,54 +48,55 @@ public class SampleSauceTest {
     public static Object[][] sauceBrowserDataProvider(Method testMethod) {
         return new Object[][]{
 
-                // if (osOption === "edgeIEWindows"){
+                /**
+                 *
+                 * add different browsers/OSs/resolutions here
+                 *
+                */
+
                 // Windows OS
-                // new Object[]{"MicrosoftEdge", "latest", "Windows 10"},
-                // new Object[]{"MicrosoftEdge", "latest-1", "Windows 10"},
-                // new Object[]{"MicrosoftEdge", "latest-1", "Windows 10"},
 
-                // new Object[]{"internet explorer", "latest", "Windows 7"},
-                // } else {
+                new Object[]{"firefox", "latest", "Windows 10", "1024x768"},
+                new Object[]{"firefox", "latest-1", "Windows 10", "1024x768"},
+                new Object[]{"firefox", "latest-2", "Windows 10", "1024x768"},
 
-                 new Object[]{"firefox", "latest", "Windows 10", "1024x768"},
-                 new Object[]{"firefox", "latest-1", "Windows 10", "1024x768"},
-                 new Object[]{"firefox", "latest-2", "Windows 10", "1024x768"},
-
-                 new Object[]{"chrome", "latest", "Windows 10", "1024x768"},
-                 new Object[]{"chrome", "latest-1", "Windows 10", "1024x768"},
-                 new Object[]{"chrome", "latest-2", "Windows 10", "1024x768"},
+                new Object[]{"chrome", "latest", "Windows 10", "1024x768"},
+                new Object[]{"chrome", "latest-1", "Windows 10", "1024x768"},
+                new Object[]{"chrome", "latest-2", "Windows 10", "1024x768"},
 
 
                 // Mac OS
-//                new Object[]{"chrome", "latest", "OS X 10.14"},
-//                new Object[]{"chrome", "latest-1", "OS X 10.14"},
-//                new Object[]{"chrome", "latest-2", "OS X 10.14"},
+//                new Object[]{"chrome", "latest", "OS X 10.14", "1024x768"},
+//                new Object[]{"chrome", "latest-1", "OS X 10.14", "1024x768"},
+//                new Object[]{"chrome", "latest-2", "OS X 10.14", "1024x768"},
 //
-//                new Object[]{"firefox", "latest", "OS X 10.14"},
-//                new Object[]{"firefox", "latest-1", "OS X 10.14"},
-//                new Object[]{"firefox", "latest-2", "OS X 10.14"},
-
-                // new Object[]{"safari", "12.0", "OS X 10.14"},
-                //
-                // new Object[]{"safari", "12.1", "OS X 10.13"},
-                // new Object[]{"safari", "11.1", "OS X 10.13"},
-                //
-                // new Object[]{"safari", "11.0", "OS X 10.12"},
-                // new Object[]{"safari", "10.1", "OS X 10.12"},
-                //
-                // new Object[]{"safari", "10.0", "OS X 10.11"},
-                // new Object[]{"safari", "9.0", "OS X 10.11"},
+//                new Object[]{"firefox", "latest", "OS X 10.14", "1024x768"},
+//                new Object[]{"firefox", "latest-1", "OS X 10.14", "1024x768"},
+//                new Object[]{"firefox", "latest-2", "OS X 10.14", "1024x768"},
+//
+//                new Object[]{"safari", "12.0", "OS X 10.14", "1024x768"},
+//
+//                new Object[]{"safari", "12.1", "OS X 10.13", "1024x768"},
+//                new Object[]{"safari", "11.1", "OS X 10.13", "1024x768"},
+//
+//                new Object[]{"safari", "11.0", "OS X 10.12", "1024x768"},
+//                new Object[]{"safari", "10.1", "OS X 10.12", "1024x768"},
+//
+//                new Object[]{"safari", "10.0", "OS X 10.11", "1024x768"},
+//                new Object[]{"safari", "9.0", "OS X 10.11", "1024x768"},
 
                 /**
-                 *** use these when running headless
-                 **/
+                 *
+                 * use these when running headless
+                 *
+                */
 
-                // new Object[]{"firefox", "latest", "Linux"},
-                // new Object[]{"firefox", "latest-1", "Linux"},
-                // new Object[]{"firefox", "latest-2", "Linux"},
-                // new Object[]{"chrome", "latest", "Linux"},
-                // new Object[]{"chrome", "latest-1", "Linux"},
-                // new Object[]{"chrome", "latest-2", "Linux"},
+//                new Object[]{"firefox", "latest", "Linux"},
+//                new Object[]{"firefox", "latest-1", "Linux"},
+//                new Object[]{"firefox", "latest-2", "Linux"},
+//                new Object[]{"chrome", "latest", "Linux"},
+//                new Object[]{"chrome", "latest-1", "Linux"},
+//                new Object[]{"chrome", "latest-2", "Linux"},
         };
     }
 
@@ -105,12 +107,12 @@ public class SampleSauceTest {
      * username and access key populated by the {@link #authentication}
      * instance.
      *
-     * @param browser    Represents the browser to be used as part of the test run.
-     * @param version    Represents the version of the browser to be used as part
-     *                   of the test run.
-     * @param os         Represents the operating system to be used as part of the test
-     *                   run.
-     * @param rez        Represents the screen resolution
+     * @param browser Represents the browser to be used as part of the test run.
+     * @param version Represents the version of the browser to be used as part
+     *                of the test run.
+     * @param os      Represents the operating system to be used as part of the test
+     *                run.
+     * @param rez     Represents the screen resolution
      * @return
      * @throws MalformedURLException if an error occurs parsing the url
      */
@@ -126,8 +128,8 @@ public class SampleSauceTest {
         capabilities.setCapability("name", methodName);
 
 
-        //Getting the build name.
-        // Using the Jenkins ENV var. You can use your own. If it is not set test will run without a build id.
+        // Getting the build name.
+        // This work with your own, or it'll use the Jenkins ENV var. If it is not set the test will run without a build id.
         if (buildTag != null) {
             capabilities.setCapability("build", buildTag);
         }
@@ -139,14 +141,15 @@ public class SampleSauceTest {
     }
 
     @Test(dataProvider = "hardCodedBrowsers")
-    public void LoadTestPage(String browser, String version, String os, String rez, Method method)
+    public void LoadTestPages(String browser, String version, String os, String rez, Method method)
             throws MalformedURLException, InvalidElementStateException, UnexpectedException, InterruptedException {
 
-        //create webdriver session
+        // create webdriver session
         this.createDriver(browser, version, os, rez, method.getName());
         WebDriver driver = this.getWebDriver();
 
-        driver.get("https://saucelabs.com"); //update this link to whichever site you'd like to take screenshots of
+        // enter tests here
+        driver.get("https://saucelabs.com");
         driver.get("https://yahoo.com");
 
     }
